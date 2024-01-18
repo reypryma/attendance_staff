@@ -1,13 +1,16 @@
+import 'package:attendance_staff/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  static route() =>
+      MaterialPageRoute(builder: (context) => const RegisterScreen());
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -21,15 +24,15 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
           Container(
-            height: screenHeight / 3,
+            height: screenHeight / 4,
             width: screenWidth,
             decoration: const BoxDecoration(
                 color: Colors.redAccent,
                 borderRadius:
                     BorderRadius.only(bottomRight: Radius.circular(70))),
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Icon(
                   Icons.qr_code_scanner,
                   color: Colors.white,
@@ -39,17 +42,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 20,
                 ),
                 Text(
-                  "Attendance",
+                  "FAANG",
                   style: TextStyle(
                       fontSize: 25,
                       color: Colors.white,
                       fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
+                )
               ],
             ),
+          ),
+          const SizedBox(
+            height: 50,
           ),
           Padding(
             padding: const EdgeInsets.all(20),
@@ -57,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 TextField(
                   decoration: const InputDecoration(
-                    labelText: "Employee Email ID",
+                    label: Text("Employee Email ID"),
                     prefixIcon: Icon(Icons.person),
                     border: OutlineInputBorder(),
                   ),
@@ -68,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 TextField(
                   decoration: const InputDecoration(
-                    labelText: "Password",
+                    label: Text("Password"),
                     prefixIcon: Icon(Icons.lock),
                     border: OutlineInputBorder(),
                   ),
@@ -78,35 +81,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 30,
                 ),
-                const SizedBox(
+                SizedBox(
                   height: 60,
                   width: double.infinity,
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                          context, LoginScreen.route(), (route) => false);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30))),
+                    child: const Text(
+                      "REGISTER",
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Your login logic here
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                  child: const Text(
-                    "LOGIN",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextButton(
-                  onPressed: () {
-                    // Your registration logic here
-                  },
-                  child: const Text("Are you a new Employee? Register here"),
-                ),
+                )
               ],
             ),
           ),
