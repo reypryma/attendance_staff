@@ -24,9 +24,21 @@ class AuthProvider extends ChangeNotifier implements IAuthProvider {
   }
 
   @override
-  Future loginEmployee(String email, String password, BuildContext context) {
-    // TODO: implement loginEmployee
-    throw UnimplementedError();
+  Future loginEmployee(
+      String email, String password, BuildContext context) async {
+    try {
+      isLoading = true;
+      if (email == "" || password == "") {
+        throw ("All Fields are required");
+      }
+      await _supabase.auth
+          .signInWithPassword(email: email, password: password);
+      isLoading = false;
+    } catch (e) {
+      isLoading = false;
+      if (!context.mounted) return;
+      Utils.showSnackBar(e.toString(), context, color: Colors.red);
+    }
   }
 
   @override
@@ -55,8 +67,10 @@ class AuthProvider extends ChangeNotifier implements IAuthProvider {
   }
 
   @override
-  Future signOut() {
-    // TODO: implement signOut
-    throw UnimplementedError();
+  Future signOut() async {
+    await _supabase.auth.signOut();
+    notifyListeners();
   }
+
+  User? get currentUser => _supabase.auth.currentUser;
 }
