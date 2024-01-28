@@ -1,5 +1,7 @@
+import 'package:attendance_staff/providers/auth_provider.dart';
 import 'package:attendance_staff/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   static route() =>
@@ -81,24 +83,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(
                   height: 30,
                 ),
-                SizedBox(
-                  height: 60,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context, LoginScreen.route(), (route) => false);
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30))),
-                    child: const Text(
-                      "REGISTER",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                )
+                Consumer<AuthProvider>(
+                  builder: (context, authServiceProvider, child) {
+                    return SizedBox(
+                      height: 60,
+                      width: double.infinity,
+                      child: authServiceProvider.isLoading
+                          ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                          : ElevatedButton(
+                        onPressed: () {
+                          authServiceProvider.registerEmployee(
+                              _emailController.text.trim(),
+                              _passwordController.text.trim(),
+                              context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30))),
+                        child: const Text(
+                          "REGISTER",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),

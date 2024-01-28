@@ -1,5 +1,7 @@
+import 'package:attendance_staff/providers/auth_provider.dart';
 import 'package:attendance_staff/screens/register_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -85,24 +87,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 30,
                 ),
-                const SizedBox(
-                  height: 60,
-                  width: double.infinity,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Your login logic here
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                  child: const Text(
-                    "LOGIN",
-                    style: TextStyle(fontSize: 20),
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) => SizedBox(
+                    height: 60,
+                    width: double.infinity,
+                    child: authProvider.isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : ElevatedButton(
+                            onPressed: () {
+                              // Your login logic here
+                              authProvider.loginEmployee(
+                                  _emailController.text.trim(),
+                                  _passwordController.text.trim(),
+                                  context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30))),
+                            child: const Text(
+                              "LOGIN",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(
