@@ -12,7 +12,7 @@ class Utils {
 
   static String generateRandomEmployeeId() {
     final random = Random();
-    const allChars = "faangFAANG0123456789";
+    const allChars = "nakorubNAKRUB123456789";
     final randomString =
     List.generate(8, (index) => allChars[random.nextInt(allChars.length)])
         .join();

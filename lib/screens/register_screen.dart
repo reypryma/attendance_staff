@@ -1,5 +1,4 @@
 import 'package:attendance_staff/providers/auth_provider.dart';
-import 'package:attendance_staff/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,9 +31,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 color: Colors.redAccent,
                 borderRadius:
                     BorderRadius.only(bottomRight: Radius.circular(70))),
-            child: Column(
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(
                   Icons.qr_code_scanner,
                   color: Colors.white,
