@@ -20,4 +20,14 @@ class UserModel {
         department: data['department'],
         employeeId: data['employee_id']);
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'email': email,
+      'name': name,
+      'department': department,
+      'employee_id': employeeId,
+    };
+  }
 }

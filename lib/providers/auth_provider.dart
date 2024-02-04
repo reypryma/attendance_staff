@@ -31,8 +31,7 @@ class AuthProvider extends ChangeNotifier implements IAuthProvider {
       if (email == "" || password == "") {
         throw ("All Fields are required");
       }
-      await _supabase.auth
-          .signInWithPassword(email: email, password: password);
+      await _supabase.auth.signInWithPassword(email: email, password: password);
       isLoading = false;
     } catch (e) {
       isLoading = false;
@@ -51,14 +50,13 @@ class AuthProvider extends ChangeNotifier implements IAuthProvider {
       }
       final AuthResponse response =
           await _supabase.auth.signUp(email: email, password: password);
-      await _dbService.insertNewUser(email, response.user!.id);
 
-      if (context.mounted) {
-        Utils.showSnackBar("Successfully registered !", context,
-            color: Colors.green);
-        await loginEmployee(email, password, context)
-            .then((value) => Navigator.pop(context));
-      }
+      await _dbService.insertNewUser(email, response.user!.id);
+      if (!context.mounted) return;
+      Utils.showSnackBar("Successfully registered !", context,
+          color: Colors.green);
+      Navigator.pop(context);
+      isLoading = false;
     } catch (e) {
       isLoading = false;
       if (!context.mounted) return;
