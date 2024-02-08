@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   static void showSnackBar(String m, BuildContext context, {Color? color}) {
@@ -17,5 +18,9 @@ class Utils {
     List.generate(8, (index) => allChars[random.nextInt(allChars.length)])
         .join();
     return randomString;
+  }
+
+  static String getCurrentDate(){
+    return DateFormat("dd MMMM yyyy").format(DateTime.now());
   }
 }
