@@ -1,3 +1,4 @@
+import 'package:attendance_staff/providers/attendance_provider.dart';
 import 'package:attendance_staff/providers/auth_provider.dart';
 import 'package:attendance_staff/screens/splash_screen.dart';
 import 'package:attendance_staff/services/db_service.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => DBService()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => AttendanceProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Attendance',
