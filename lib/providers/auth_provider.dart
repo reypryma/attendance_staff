@@ -1,4 +1,5 @@
 import 'package:attendance_staff/helper/utills.dart';
+import 'package:attendance_staff/screens/home/home_screen.dart';
 import 'package:attendance_staff/services/db_service.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -31,7 +32,13 @@ class AuthProvider extends ChangeNotifier implements IAuthProvider {
       if (email == "" || password == "") {
         throw ("All Fields are required");
       }
-      await _supabase.auth.signInWithPassword(email: email, password: password);
+      AuthResponse response = await _supabase.auth
+          .signInWithPassword(email: email, password: password);
+      if (response.user != null) {
+        Navigator.pushAndRemoveUntil(
+            context, HomeScreen.route(), (route) => false);
+      }
+
       isLoading = false;
     } catch (e) {
       isLoading = false;
