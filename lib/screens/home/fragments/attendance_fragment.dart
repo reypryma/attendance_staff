@@ -68,7 +68,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(top: 16),
+              margin: const EdgeInsets.only(top: 16, bottom: 32),
               height: 150,
               decoration: const BoxDecoration(
                   color: Colors.white,
@@ -83,41 +83,45 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Check In",
-                        style: TextStyle(fontSize: 20, color: Colors.black54),
-                      ),
-                      SizedBox(
-                        width: 80,
-                        child: Divider(),
-                      ),
-                      Text(
-                        '--/--',
-                        style: TextStyle(fontSize: 25),
-                      )
-                    ],
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Check In",
+                          style: TextStyle(fontSize: 20, color: Colors.black54),
+                        ),
+                        SizedBox(
+                          width: 80,
+                          child: Divider(),
+                        ),
+                        Text(
+                          '--/--',
+                          style: TextStyle(fontSize: 25),
+                        )
+                      ],
+                    ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Check In",
-                        style: TextStyle(fontSize: 20, color: Colors.black54),
-                      ),
-                      const SizedBox(
-                        width: 80,
-                        child: Divider(),
-                      ),
-                      Text(
-                        '--/--',
-                        style: const TextStyle(fontSize: 25),
-                      )
-                    ],
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Check Out",
+                          style: TextStyle(fontSize: 20, color: Colors.black54),
+                        ),
+                        SizedBox(
+                          width: 80,
+                          child: Divider(),
+                        ),
+                        Text(
+                          '--/--',
+                          style: TextStyle(fontSize: 25),
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),
