@@ -16,7 +16,7 @@ class AttendanceModel {
       required this.checkInLocation,
       required this.checkOutLocation});
 
-  factory AttendanceModel.fromJson(Map<String, dynamic> data){
+  factory AttendanceModel.fromJson(Map<String, dynamic> data) {
     return AttendanceModel(
       id: data['employee_id'],
       date: data['date'],
@@ -28,4 +28,21 @@ class AttendanceModel {
     );
   }
 
+  static Map<String, dynamic> toMapCheckIn(
+      String id, String date, String checkIn, String checkInLocation) {
+    return {
+      'employee_id': id,
+      'date': date,
+      'check_in': checkIn,
+      'check_in_location': checkInLocation,
+    };
+  }
+
+  static Map<String, dynamic> toMapCheckOut(
+      {required String checkOut, required String getLocation}) {
+    return {
+      'check_out': checkOut,
+      'check_out_location': getLocation,
+    };
+  }
 }
