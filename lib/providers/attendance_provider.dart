@@ -89,17 +89,20 @@ class AttendanceProvider extends ChangeNotifier implements IAttendanceProvider {
         }
       } else if (attendanceModel?.checkOut == null) {
         try {
-          await _supabase.from(Constants.attendancetable).update(
-              AttendanceModel.toMapCheckOut(
+          await _supabase
+              .from(Constants.attendancetable)
+              .update(AttendanceModel.toMapCheckOut(
                   checkOut: Utils.getCurrentHourMinute(),
-                  getLocation: getLocation));
+                  getLocation: getLocation))
+              .eq('employee_id', _supabase.auth.currentUser!.id)
+              .eq('date', todayDate);
         } on Exception catch (e) {
           if (kDebugMode) {
             print("Errror markAttendance: CheckOut $e");
           }
         }
       } else {
-        Utils.showSnackBar("You have already checked out today !", context);
+        Utils.showSnackBar("You have already checked out today!", context);
       }
       getTodayAttendance();
     } else {
