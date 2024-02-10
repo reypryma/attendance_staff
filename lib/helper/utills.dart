@@ -15,12 +15,20 @@ class Utils {
     final random = Random();
     const allChars = "nakorubNAKRUB123456789";
     final randomString =
-    List.generate(8, (index) => allChars[random.nextInt(allChars.length)])
-        .join();
+        List.generate(8, (index) => allChars[random.nextInt(allChars.length)])
+            .join();
     return randomString;
   }
 
-  static String getCurrentDate(){
+  static String getCurrentDate() {
     return DateFormat("dd MMMM yyyy").format(DateTime.now());
+  }
+
+  static String getCurrentMonth() {
+    return DateFormat("MMMM yyyy").format(DateTime.now());
+  }
+
+  static String getCurrentHourMinute() {
+    return DateFormat("HH:mm").format(DateTime.now());
   }
 }

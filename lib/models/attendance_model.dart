@@ -29,7 +29,7 @@ class AttendanceModel {
   }
 
   static Map<String, dynamic> toMapCheckIn(
-      String id, String date, String checkIn, String checkInLocation) {
+      String id, String date, String checkIn, Map checkInLocation) {
     return {
       'employee_id': id,
       'date': date,
@@ -39,7 +39,7 @@ class AttendanceModel {
   }
 
   static Map<String, dynamic> toMapCheckOut(
-      {required String checkOut, required String getLocation}) {
+      {required String checkOut, required Map getLocation}) {
     return {
       'check_out': checkOut,
       'check_out_location': getLocation,
