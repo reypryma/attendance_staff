@@ -1,4 +1,5 @@
 import 'package:attendance_staff/models/user_model.dart';
+import 'package:attendance_staff/providers/attendance_provider.dart';
 import 'package:attendance_staff/services/db_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,12 +18,14 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
 
   @override
   void initState() {
-    // Provider.of<AttendanceProvider>(context, listen: false).getTodayAttendance();
+    Provider.of<AttendanceProvider>(context, listen: false).getTodayAttendance();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final attendanceService = Provider.of<AttendanceProvider>(context);
+
     return CustomScrollView(
       slivers: [
         SliverFillRemaining(
@@ -85,7 +88,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                                 blurRadius: 10,
                                 offset: Offset(2, 2))
                           ]),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -94,17 +97,17 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text(
+                                const Text(
                                   "Check In",
                                   style: TextStyle(fontSize: 20, color: Colors.black54),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 80,
                                   child: Divider(),
                                 ),
                                 Text(
-                                  '--/--',
-                                  style: TextStyle(fontSize: 25),
+                                  attendanceService.attendanceModel?.checkIn ?? '--/--',
+                                  style: const TextStyle(fontSize: 25),
                                 )
                               ],
                             ),
@@ -114,17 +117,17 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text(
+                                const Text(
                                   "Check Out",
                                   style: TextStyle(fontSize: 20, color: Colors.black54),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 80,
                                   child: Divider(),
                                 ),
                                 Text(
-                                  '--/--',
-                                  style: TextStyle(fontSize: 25),
+                                  attendanceService.attendanceModel?.checkOut ?? '--/--',
+                                  style: const TextStyle(fontSize: 25),
                                 )
                               ],
                             ),
@@ -158,7 +161,9 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                   child: Builder(builder: (context) => Align(
                     alignment: Alignment.bottomCenter,
                     child: SlideAction(
-                      text: "Slide to Check in",
+                      text: attendanceService.attendanceModel?.checkIn == null
+                          ? "Slide to Check in"
+                          : "Slide to Check Out",
                       textStyle: const TextStyle(
                         color: Colors.black54,
                         fontSize: 18,
@@ -167,6 +172,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                       innerColor: Colors.redAccent,
                       key: key,
                       onSubmit: () async {
+                        await attendanceService.markAttendance(context);
                         key.currentState!.reset();
                       },
                     ),

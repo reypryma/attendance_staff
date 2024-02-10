@@ -63,7 +63,7 @@ class DBService extends ChangeNotifier implements IDBService {
           ).toMap());
     } on Exception catch (e) {
       if (kDebugMode) {
-        print("Error insertNewUser $e");
+        print("Errror insertNewUser $e");
       }
     }
   }
