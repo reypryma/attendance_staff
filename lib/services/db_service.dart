@@ -25,9 +25,15 @@ class DBService extends ChangeNotifier implements IDBService {
 
   @override
   Future<void> getAllDepartments() async {
-    final List result =
-        await _supabase.from(Constants.departmentTable).select();
-    departments = result.map((e) => DepartmentModel.fromJson(e)).toList();
+    try {
+      final List result =
+              await _supabase.from(Constants.departmentTable).select();
+      departments = result.map((e) => DepartmentModel.fromJson(e)).toList();
+    } catch (e) {
+      if (kDebugMode) {
+        print("Errror DBService getAllDepartments $e");
+      }
+    }
     notifyListeners();
   }
 

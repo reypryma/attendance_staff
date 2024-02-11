@@ -24,7 +24,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
 
   @override
   Widget build(BuildContext context) {
-    final attendanceService = Provider.of<AttendanceProvider>(context);
+    final attendanceProvider = Provider.of<AttendanceProvider>(context);
 
     return CustomScrollView(
       slivers: [
@@ -106,7 +106,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                                   child: Divider(),
                                 ),
                                 Text(
-                                  attendanceService.attendanceModel?.checkIn ?? '--/--',
+                                  attendanceProvider.attendanceModel?.checkIn ?? '--/--',
                                   style: const TextStyle(fontSize: 25),
                                 )
                               ],
@@ -126,7 +126,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                                   child: Divider(),
                                 ),
                                 Text(
-                                  attendanceService.attendanceModel?.checkOut ?? '--/--',
+                                  attendanceProvider.attendanceModel?.checkOut ?? '--/--',
                                   style: const TextStyle(fontSize: 25),
                                 )
                               ],
@@ -161,7 +161,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                   child: Builder(builder: (context) => Align(
                     alignment: Alignment.bottomCenter,
                     child: SlideAction(
-                      text: attendanceService.attendanceModel?.checkIn == null
+                      text: attendanceProvider.attendanceModel?.checkIn == null
                           ? "Slide to Check in"
                           : "Slide to Check Out",
                       textStyle: const TextStyle(
@@ -172,7 +172,7 @@ class _AttendanceFragmentState extends State<AttendanceFragment> {
                       innerColor: Colors.redAccent,
                       key: key,
                       onSubmit: () async {
-                        await attendanceService.markAttendance(context);
+                        await attendanceProvider.markAttendance(context);
                         key.currentState!.reset();
                       },
                     ),
