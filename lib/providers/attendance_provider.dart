@@ -72,7 +72,7 @@ class AttendanceProvider extends ChangeNotifier implements IAttendanceProvider {
     if (kDebugMode) {
       print("Location Data: $getLocation");
     }
-    // if(!context.mounted) return;
+    if(!context.mounted) return;
     if (getLocation != null) {
       if (attendanceModel?.checkIn == null) {
         try {
