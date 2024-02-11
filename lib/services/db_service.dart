@@ -52,9 +52,15 @@ class DBService extends ChangeNotifier implements IDBService {
   }
 
   @override
-  Future updateProfile(String name, BuildContext context) {
-    // TODO: implement updateProfile
-    throw UnimplementedError();
+  Future updateProfile(String name, BuildContext context) async {
+    await _supabase.from(Constants.employeeTable).update({
+      'name': name,
+      'department': employeeDepartment,
+    }).eq('id', _supabase.auth.currentUser!.id);
+
+    Utils.showSnackBar("Profile Updated Successfully", context,
+        color: Colors.green);
+    notifyListeners();
   }
 
   @override
