@@ -1,4 +1,3 @@
-import 'package:attendance_staff/models/department_model.dart';
 import 'package:attendance_staff/providers/auth_provider.dart';
 import 'package:attendance_staff/services/db_service.dart';
 import 'package:flutter/material.dart';
