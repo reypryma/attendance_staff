@@ -1,4 +1,5 @@
 import 'package:attendance_staff/providers/auth_provider.dart';
+import 'package:attendance_staff/screens/login_screen.dart';
 import 'package:attendance_staff/services/db_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                         child: TextButton.icon(
                             onPressed: () {
                               Provider.of<AuthProvider>(context, listen: false)
-                                  .signOut();
+                                  .signOut().then((value) => Navigator.pushAndRemoveUntil(context, LoginScreen.route(), (route) => false));
                             },
                             icon: const Icon(Icons.logout),
                             label: const Text("Sign Out")),
