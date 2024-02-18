@@ -73,7 +73,11 @@ class AuthProvider extends ChangeNotifier implements IAuthProvider {
 
   @override
   Future signOut() async {
-    await _supabase.auth.signOut();
+    try {
+      await _supabase.auth.signOut();
+    } catch (e) {
+      print("errror $e");
+    }
     notifyListeners();
   }
 

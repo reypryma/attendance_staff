@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:attendance_staff/helper/constant.dart';
 import 'package:attendance_staff/helper/utills.dart';
 import 'package:attendance_staff/models/user_model.dart';
@@ -12,14 +14,17 @@ abstract class IDBService {
 
   Future<void> getAllDepartments();
 
-  Future updateProfile(String name, BuildContext context);
+  Future updateProfile(String name, File? imageFile, BuildContext context);
 
   Future insertNewUser(String email, var id);
+
+  Future uploadAvatar(File imageFile, bool isUpdating);
 }
 
 class DBService extends ChangeNotifier implements IDBService {
   final SupabaseClient _supabase = Supabase.instance.client;
   UserModel? userModel;
+  String? imageUrl = null;
   List<DepartmentModel> departments = [];
   int? employeeDepartment;
 
@@ -39,12 +44,17 @@ class DBService extends ChangeNotifier implements IDBService {
 
   @override
   Future<UserModel> getUserData() async {
-    final userData = await _supabase
-        .from(Constants.employeeTable)
-        .select()
-        .eq('id', _supabase.auth.currentUser!.id)
-        .single();
-    userModel = UserModel.fromJson(userData);
+    try {
+      final userData = await _supabase
+          .from(Constants.employeeTable)
+          .select()
+          .eq('id', _supabase.auth.currentUser!.id)
+          .single();
+      userModel = UserModel.fromJson(userData);
+    } on Exception catch (e) {
+      print("Errror getUserData $e");
+    }
+
     employeeDepartment == null
         ? employeeDepartment = userModel?.department
         : null;
@@ -52,10 +62,15 @@ class DBService extends ChangeNotifier implements IDBService {
   }
 
   @override
-  Future updateProfile(String name, BuildContext context) async {
+  Future updateProfile(String name, File? imageFile, BuildContext context) async {
+    if(imageFile != null){
+      await uploadAvatar(imageFile, userModel!.avatar != null);
+    }
+
     await _supabase.from(Constants.employeeTable).update({
       'name': name,
       'department': employeeDepartment,
+      'avatar': imageUrl
     }).eq('id', _supabase.auth.currentUser!.id);
 
     Utils.showSnackBar("Profile Updated Successfully", context,
@@ -72,11 +87,29 @@ class DBService extends ChangeNotifier implements IDBService {
             email: email,
             employeeId: Utils.generateRandomEmployeeId(),
             department: null,
+            avatar: null,
           ).toMap());
     } on Exception catch (e) {
       if (kDebugMode) {
         print("Errror insertNewUser $e");
       }
+    }
+  }
+
+  @override
+  Future uploadAvatar(File imageFile, bool isUpdating) async {
+    try {
+      final imagePath = '/${Constants.avatars}/${userModel!.id}';
+      final image = await imageFile.readAsBytes();
+      if(isUpdating){
+        await _supabase.storage.from(Constants.profileStorage).updateBinary(imagePath + userModel!.avatar!, image);
+      } else {
+        await _supabase.storage.from(Constants.profileStorage).uploadBinary(imagePath, image);
+      }
+      imageUrl = _supabase.storage.from(Constants.avatars).getPublicUrl(imagePath);
+      print("ImageUrl $imageUrl");
+    } on Exception catch (e) {
+      print("uploadAvatar error : $e");
     }
   }
 }

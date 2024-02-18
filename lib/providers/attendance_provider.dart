@@ -69,9 +69,7 @@ class AttendanceProvider extends ChangeNotifier implements IAttendanceProvider {
     Map? getLocation =
         await LocationService().initializeAndGetLocation(context);
 
-    if (kDebugMode) {
-      print("Location Data: $getLocation");
-    }
+    print("Location Data: $getLocation");
     if(!context.mounted) return;
     if (getLocation != null) {
       if (attendanceModel?.checkIn == null) {
@@ -83,9 +81,7 @@ class AttendanceProvider extends ChangeNotifier implements IAttendanceProvider {
                   Utils.getCurrentHourMinute(),
                   getLocation));
         } on Exception catch (e) {
-          if (kDebugMode) {
             print("Errror markAttendance: CheckIn $e");
-          }
         }
       } else if (attendanceModel?.checkOut == null) {
         try {
@@ -97,9 +93,7 @@ class AttendanceProvider extends ChangeNotifier implements IAttendanceProvider {
               .eq('employee_id', _supabase.auth.currentUser!.id)
               .eq('date', todayDate);
         } on Exception catch (e) {
-          if (kDebugMode) {
             print("Errror markAttendance: CheckOut $e");
-          }
         }
       } else {
         Utils.showSnackBar("You have already checked out today!", context);
