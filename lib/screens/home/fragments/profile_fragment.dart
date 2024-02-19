@@ -34,7 +34,9 @@ class _ProfileFragmentState extends State<ProfileFragment> {
         image = File(pickedFile.path);
         imageBytes = await image!.readAsBytes();
 
-        print("image changed");
+        if (kDebugMode) {
+          print("image changed");
+        }
         setState(() {});
       }
     }
