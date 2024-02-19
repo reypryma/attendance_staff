@@ -24,15 +24,24 @@ abstract class IDBService {
 class DBService extends ChangeNotifier implements IDBService {
   final SupabaseClient _supabase = Supabase.instance.client;
   UserModel? userModel;
-  String? imageUrl = null;
+  String? imageUrl;
   List<DepartmentModel> departments = [];
   int? employeeDepartment;
+
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  set isLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
 
   @override
   Future<void> getAllDepartments() async {
     try {
       final List result =
-              await _supabase.from(Constants.departmentTable).select();
+          await _supabase.from(Constants.departmentTable).select();
       departments = result.map((e) => DepartmentModel.fromJson(e)).toList();
     } catch (e) {
       if (kDebugMode) {
@@ -51,6 +60,7 @@ class DBService extends ChangeNotifier implements IDBService {
           .eq('id', _supabase.auth.currentUser!.id)
           .single();
       userModel = UserModel.fromJson(userData);
+      imageUrl = userModel?.avatar;
     } on Exception catch (e) {
       print("Errror getUserData $e");
     }
@@ -62,8 +72,9 @@ class DBService extends ChangeNotifier implements IDBService {
   }
 
   @override
-  Future updateProfile(String name, File? imageFile, BuildContext context) async {
-    if(imageFile != null){
+  Future updateProfile(
+      String name, File? imageFile, BuildContext context) async {
+    if (imageFile != null) {
       await uploadAvatar(imageFile, userModel!.avatar != null);
     }
 
@@ -73,8 +84,10 @@ class DBService extends ChangeNotifier implements IDBService {
       'avatar': imageUrl
     }).eq('id', _supabase.auth.currentUser!.id);
 
+    _isLoading = false;
     Utils.showSnackBar("Profile Updated Successfully", context,
         color: Colors.green);
+
     notifyListeners();
   }
 
@@ -99,14 +112,29 @@ class DBService extends ChangeNotifier implements IDBService {
   @override
   Future uploadAvatar(File imageFile, bool isUpdating) async {
     try {
-      final imagePath = '/${Constants.avatars}/${userModel!.id}';
-      final image = await imageFile.readAsBytes();
-      if(isUpdating){
-        await _supabase.storage.from(Constants.profileStorage).updateBinary(imagePath + userModel!.avatar!, image);
-      } else {
-        await _supabase.storage.from(Constants.profileStorage).uploadBinary(imagePath, image);
-      }
-      imageUrl = _supabase.storage.from(Constants.avatars).getPublicUrl(imagePath);
+      final userId = _supabase.auth.currentUser!.id;
+      final imagePath = '/${Constants.avatars}/$userId/avatar';
+      final imagePublicPath = '${Constants.avatars}/$userId/avatar';
+      final fileName = imageFile.path.split('/').last;
+
+      print("Imagepath check $imagePath with filename $fileName");
+
+      final imageExtension = imageFile.path.split(".").last.toLowerCase();
+      final imageByte = await imageFile.readAsBytes();
+
+      // Check if folder exists
+
+      await _supabase.storage.from(Constants.profileStorage).uploadBinary(
+          imagePath, imageByte,
+          fileOptions:
+              FileOptions(upsert: true, contentType: 'image/$imageExtension'));
+
+      String imageTemp = _supabase.storage
+          .from(Constants.profileStorage)
+          .getPublicUrl(imagePublicPath);
+      imageUrl = Uri.parse(imageTemp).replace(queryParameters: {
+        't': DateTime.now().millisecondsSinceEpoch.toString()
+      }).toString();
       print("ImageUrl $imageUrl");
     } on Exception catch (e) {
       print("uploadAvatar error : $e");
