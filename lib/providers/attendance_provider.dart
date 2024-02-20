@@ -21,7 +21,6 @@ class AttendanceProvider extends ChangeNotifier implements IAttendanceProvider {
   String todayDate = Utils.getCurrentDate();
   AttendanceModel? attendanceModel;
 
-  bool _isLoading = false;
   String _attendanceHistoryMonth = Utils.getCurrentMonth();
 
   String get attendanceHistoryMonth => _attendanceHistoryMonth;
@@ -30,6 +29,8 @@ class AttendanceProvider extends ChangeNotifier implements IAttendanceProvider {
     _attendanceHistoryMonth = value;
     notifyListeners();
   }
+
+  bool _isLoading = false;
 
   bool get isLoading => _isLoading;
 
