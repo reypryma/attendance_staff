@@ -32,12 +32,12 @@ class _ProfileFragmentState extends State<ProfileFragment> {
           source: ImageSource.gallery, imageQuality: 100);
 
       if (pickedFile != null) {
-        if(kIsWeb){
+        if (kIsWeb) {
           // xFile = XFile(pickedFile.path);
-          image = File(pickedFile.path);
-          print("xFile path "+pickedFile.path);
-          // imageBytes = await xFile!.readAsBytes();
-          imageBytes = await image!.readAsBytes();
+          xFile = pickedFile;
+          print("xFile path " + pickedFile.path);
+          imageBytes = await xFile!.readAsBytes();
+          // imageBytes = await image!.readAsBytes();
         } else {
           image = File(pickedFile.path);
           imageBytes = await image!.readAsBytes();
@@ -98,15 +98,15 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                             child: Center(
                               child: kIsWeb
                                   ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: commonCacheImageWidget(
-                                        image?.path ?? dbService.imageUrl ??
-                                             Images.personImage,
-                                        60,
-                                        width: 60,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
+                                borderRadius: BorderRadius.circular(20),
+                                child: xFile == null ? commonCacheImageWidget(
+                                  dbService.imageUrl ??
+                                      Images.personImage,
+                                  60,
+                                  width: 60,
+                                  fit: BoxFit.cover,
+                                ) : Image.network(xFile!.path, width: 60, height: 60, fit: BoxFit.cover),
+                              )
                                   : Container(
                                 width: 100,
                                 height: 100,
