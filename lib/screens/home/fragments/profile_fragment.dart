@@ -22,6 +22,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
   TextEditingController nameController = TextEditingController();
   final _picker = ImagePicker();
   File? image;
+  XFile? xFile;
   Uint8List? imageBytes;
 
   @override
@@ -31,8 +32,16 @@ class _ProfileFragmentState extends State<ProfileFragment> {
           source: ImageSource.gallery, imageQuality: 100);
 
       if (pickedFile != null) {
-        image = File(pickedFile.path);
-        imageBytes = await image!.readAsBytes();
+        if(kIsWeb){
+          // xFile = XFile(pickedFile.path);
+          image = File(pickedFile.path);
+          print("xFile path "+pickedFile.path);
+          // imageBytes = await xFile!.readAsBytes();
+          imageBytes = await image!.readAsBytes();
+        } else {
+          image = File(pickedFile.path);
+          imageBytes = await image!.readAsBytes();
+        }
 
         if (kDebugMode) {
           print("image changed");
@@ -87,23 +96,28 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                                 borderRadius: BorderRadius.circular(20),
                                 color: Colors.redAccent),
                             child: Center(
-                              child: image == null
+                              child: kIsWeb
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
                                       child: commonCacheImageWidget(
-                                        dbService.imageUrl ??
-                                            Images.personImage,
+                                        image?.path ?? dbService.imageUrl ??
+                                             Images.personImage,
                                         60,
                                         width: 60,
                                         fit: BoxFit.cover,
                                       ),
                                     )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Image.file(image!,
-                                          fit: BoxFit.cover,
-                                          width: 60,
-                                          height: 60)),
+                                  : Container(
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: image == null ? Image.asset(Images.personImage, color: Colors.grey, fit: BoxFit.contain).image : Image.file(File(image!.path), fit: BoxFit.cover).image,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                           Positioned(
