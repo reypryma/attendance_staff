@@ -5,6 +5,7 @@ import 'package:attendance_staff/helper/utills.dart';
 import 'package:attendance_staff/models/user_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/department_model.dart';
@@ -16,9 +17,13 @@ abstract class IDBService {
 
   Future updateProfile(String name, File? imageFile, BuildContext context);
 
+  Future updateProfileWeb(String name, XFile? xFile, BuildContext context);
+
   Future insertNewUser(String email, var id);
 
   Future uploadAvatar(File imageFile, bool isUpdating);
+
+  Future uploadAvatarWeb(XFile xFile, bool isUpdating);
 }
 
 class DBService extends ChangeNotifier implements IDBService {
@@ -62,7 +67,9 @@ class DBService extends ChangeNotifier implements IDBService {
       userModel = UserModel.fromJson(userData);
       imageUrl = userModel?.avatar;
     } on Exception catch (e) {
-      print("Errror getUserData $e");
+      if (kDebugMode) {
+        print("Errror getUserData $e");
+      }
     }
 
     employeeDepartment == null
@@ -117,7 +124,9 @@ class DBService extends ChangeNotifier implements IDBService {
       final imagePublicPath = '${Constants.avatars}/$userId/avatar';
       final fileName = imageFile.path.split('/').last;
 
-      print("Imagepath check $imagePath with filename $fileName");
+      if (kDebugMode) {
+        print("Imagepath check $imagePath with filename $fileName");
+      }
 
       final imageExtension = imageFile.path.split(".").last.toLowerCase();
       final imageByte = await imageFile.readAsBytes();
@@ -135,9 +144,71 @@ class DBService extends ChangeNotifier implements IDBService {
       imageUrl = Uri.parse(imageTemp).replace(queryParameters: {
         't': DateTime.now().millisecondsSinceEpoch.toString()
       }).toString();
-      print("ImageUrl $imageUrl");
+      if (kDebugMode) {
+        print("ImageUrl $imageUrl");
+      }
     } on Exception catch (e) {
-      print("uploadAvatar error : $e");
+      if (kDebugMode) {
+        print("uploadAvatar error : $e");
+      }
     }
+  }
+
+  @override
+  Future uploadAvatarWeb(XFile xFile, bool isUpdating) async {
+    try {
+      final userId = _supabase.auth.currentUser!.id;
+      final imagePath = '/${Constants.avatars}/$userId/avatar';
+      final imagePublicPath = '${Constants.avatars}/$userId/avatar';
+      final fileName = xFile.path.split('/').last;
+
+      final imageExtension = xFile.name.split(".").last.toLowerCase();
+      final imageByte = await xFile.readAsBytes();
+
+      // Check if folder exists
+      if (kDebugMode) {
+        print("Imagepath check $imagePath with filename $fileName");
+        print("imageByte check , imageExtension $imageExtension");
+      }
+
+      await _supabase.storage.from(Constants.profileStorage).uploadBinary(
+          imagePath, imageByte,
+          fileOptions:
+              FileOptions(upsert: true, contentType: 'image/$imageExtension'));
+
+      String imageTemp = _supabase.storage
+          .from(Constants.profileStorage)
+          .getPublicUrl(imagePublicPath);
+      imageUrl = Uri.parse(imageTemp).replace(queryParameters: {
+        't': DateTime.now().millisecondsSinceEpoch.toString()
+      }).toString();
+      if (kDebugMode) {
+        print("ImageUrl $imageUrl");
+      }
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print("uploadAvatar error : $e");
+      }
+    }
+  }
+
+  @override
+  Future updateProfileWeb(
+      String name, XFile? xFile, BuildContext context) async {
+    if (xFile != null) {
+      await uploadAvatarWeb(xFile, userModel!.avatar != null);
+    }
+
+    await _supabase.from(Constants.employeeTable).update({
+      'name': name,
+      'department': employeeDepartment,
+      'avatar': imageUrl
+    }).eq('id', _supabase.auth.currentUser!.id);
+
+    _isLoading = false;
+    Utils.showSnackBar("Profile Updated Successfully", context,
+        color: Colors.green);
+
+    notifyListeners();
   }
 }
