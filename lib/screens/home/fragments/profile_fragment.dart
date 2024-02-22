@@ -22,7 +22,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
   TextEditingController nameController = TextEditingController();
   final _picker = ImagePicker();
   File? image;
-  Uint8List? imageBytes;
+  XFile? xFile;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,13 @@ class _ProfileFragmentState extends State<ProfileFragment> {
           source: ImageSource.gallery, imageQuality: 100);
 
       if (pickedFile != null) {
-        image = File(pickedFile.path);
-        imageBytes = await image!.readAsBytes();
+        if (kIsWeb) {
+          // xFile = XFile(pickedFile.path);
+          xFile = pickedFile;
+          print("xFile path ${xFile!.path}");
+        } else {
+          image = File(pickedFile.path);
+        }
 
         if (kDebugMode) {
           print("image changed");
@@ -87,23 +92,40 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                                 borderRadius: BorderRadius.circular(20),
                                 color: Colors.redAccent),
                             child: Center(
-                              child: image == null
+                              child: kIsWeb
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
-                                      child: commonCacheImageWidget(
-                                        dbService.imageUrl ??
-                                            Images.personImage,
-                                        60,
-                                        width: 60,
-                                        fit: BoxFit.cover,
-                                      ),
+                                      child: xFile == null
+                                          ? commonCacheImageWidget(
+                                              dbService.imageUrl ??
+                                                  Images.personImage,
+                                              60,
+                                              width: 60,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.network(xFile!.path,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover),
                                     )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Image.file(image!,
+                                  : Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: image == null
+                                              ? Image.asset(Images.personImage,
+                                                      color: Colors.grey,
+                                                      fit: BoxFit.contain)
+                                                  .image
+                                              : Image.file(File(image!.path),
+                                                      fit: BoxFit.cover)
+                                                  .image,
                                           fit: BoxFit.cover,
-                                          width: 60,
-                                          height: 60)),
+                                        ),
+                                      ),
+                                    ),
                             ),
                           ),
                           Positioned(
@@ -170,8 +192,13 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                           child: ElevatedButton(
                             onPressed: () async {
                               dbService.isLoading = true;
-                              await dbService.updateProfile(
-                                  nameController.text.trim(), image, context);
+                              if (kIsWeb) {
+                                await dbService.updateProfileWeb(
+                                    nameController.text.trim(), xFile, context);
+                              } else {
+                                await dbService.updateProfile(
+                                    nameController.text.trim(), image, context);
+                              }
                             },
                             child: const Text(
                               "Update Profile",
